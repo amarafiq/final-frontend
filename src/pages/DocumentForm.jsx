@@ -14,6 +14,7 @@ function DocumentForm({ onDocumentCreated }) {
   const [departments, setDepartments] = useState([]);
   const [accessLevel, setAccessLevel] = useState("");
   const [file, setFile] = useState(null);
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const documentFile = useRef(null);
@@ -71,6 +72,7 @@ function DocumentForm({ onDocumentCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); 
+    setSuccess("");
     setLoading(true);
   
     const token = localStorage.getItem("token");
@@ -112,6 +114,10 @@ function DocumentForm({ onDocumentCreated }) {
       if (onDocumentCreated) {
         onDocumentCreated();
       }
+    
+      setSuccess('Document created successfully! Redirecting...');
+      setTimeout(() => navigate('/documents'), 2000);
+    
     } catch (err) {
       if (err.response?.data?.errors) {
         const errors = err.response.data.errors;
@@ -129,7 +135,20 @@ function DocumentForm({ onDocumentCreated }) {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Upload New Document</h1>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
+          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+            
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 mb-4">
+                <div className="text-sm text-red-700">{error}</div>
+              </div>
+            )}
 
+            {success && (
+              <div className="rounded-md bg-green-50 p-4 mb-4">
+                <div className="text-sm text-green-700">{success}</div>
+              </div>
+            )}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
@@ -286,6 +305,8 @@ function DocumentForm({ onDocumentCreated }) {
           </button>
         </div>
       </form>
+     </div>
+    </div>
     </div>
   );
 };

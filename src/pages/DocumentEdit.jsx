@@ -21,6 +21,7 @@ const DocumentEdit = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [notAllowed, setNotAllowed] = useState(false);
 
@@ -75,6 +76,7 @@ const DocumentEdit = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   setError('');
+  setSuccess('');
 
   if (!formData.title.trim()) {
     setError('Title is required');
@@ -106,7 +108,8 @@ const handleSubmit = async (e) => {
       }, 
       config 
     );
-    navigate(`/documents/${id}`, { replace: true });
+    setSuccess('Document updated successfully! Redirecting...');
+    setTimeout(() => navigate(`/documents/${id}`, { replace: true }), 2000);
     
   } catch (err) {
     console.error("Update error:", err);
@@ -155,11 +158,20 @@ const handleSubmit = async (e) => {
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Edit Document</h1>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
-          {error}
-        </div>
-      )}
+       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
+          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+            
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 mb-4">
+                <div className="text-sm text-red-700">{error}</div>
+              </div>
+            )}
+
+            {success && (
+              <div className="rounded-md bg-green-50 p-4 mb-4">
+                <div className="text-sm text-green-700">{success}</div>
+              </div>
+            )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
@@ -278,6 +290,8 @@ const handleSubmit = async (e) => {
           </button>
         </div>
       </form>
+      </div>
+      </div>
     </div>
   );
 };
