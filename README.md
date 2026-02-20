@@ -1,16 +1,44 @@
-# React + Vite
+# Final Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A modern, responsive frontend application built with **React** and **Vite**. This repository contains the client-side code responsible for the user interface, state management, and API integration.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ⚡ **Vite Powered**: Lightning-fast HMR and optimized production builds
+- ⚛️ **React 18**: Built with the latest React features including Concurrent Mode
+- 🎨 **Responsive Design**: Fully optimized for mobile, tablet, and desktop views
+- 🔄 **State Management**: Utilizes [Redux Toolkit/Zustand/Context API] for efficient global state
+- 🌐 **API Integration**: Seamless communication with backend services via Axios/React Query
+- 🧩 **Component-Driven**: Modular, reusable UI components
+- 🔐 **Authentication**: Secure login/logout flows with JWT/OAuth support
+- 🧪 **Testing Ready**: Configured with [Vitest/React Testing Library] for unit tests
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Category | Technology |
+| :--- | :--- |
+| **Framework** | React 18 |
+| **Build Tool** | Vite 5 |
+| **Language** | JavaScript / TypeScript |
+| **Styling** | [Tailwind CSS / Sass / CSS Modules / Styled Components] |
+| **State Management** | [Redux Toolkit / Zustand / Context API] |
+| **Routing** | React Router DOM v6 |
+| **HTTP Client** | [Axios / TanStack Query / Fetch] |
+| **Package Manager** | npm / yarn / pnpm |
 
-## Expanding the ESLint configuration
+## 📦 Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Before running this project locally, ensure you have the following installed:
+
+- **Node.js**: v18+ (LTS recommended)
+- **Package Manager**: npm, yarn, or pnpm
+- **Git**: For version control
+
+## ⚙️ Installation & Setup
+
+Follow these steps to get the development environment up and running:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/amarafiq/final-frontend.git
+cd final-frontend
