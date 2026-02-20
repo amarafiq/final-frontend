@@ -13,12 +13,11 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Retrieve the token from localStorage
         const token = localStorage.getItem("token");
 
         const response = await axios.get("http://localhost:8000/api/v1/documents", {
           headers: {
-            // Include the Authorization header to fix the 401 error
+
             Authorization: `Bearer ${token}`,
           },
         });
@@ -27,7 +26,6 @@ const Dashboard = () => {
         
         const total = documents.length;
 
-        // Ensure you match the correct ID property (e.g., user.department_id)
         const userDepartmentId = user?.department_id;
         const departmentDocuments = documents.filter(d => d.department_id === userDepartmentId).length;
 

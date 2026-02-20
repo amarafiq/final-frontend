@@ -8,7 +8,6 @@ const DocumentEdit = () => {
   const { user, hasPermission } = useAuth();
   const navigate = useNavigate();
 
-  // Form state
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -18,17 +17,13 @@ const DocumentEdit = () => {
     uploaded_by: null,
   });
 
-  // Master data
   const [categories, setCategories] = useState([]);
   const [departments, setDepartments] = useState([]);
-
-  // UI state
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [notAllowed, setNotAllowed] = useState(false);
 
-  // Fetch document and master data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,8 +32,6 @@ const DocumentEdit = () => {
           headers: { Authorization: `Bearer ${token}` }
         };
 
-        // 1. Use backticks and ${id} 
-        // 2. Pass the config (headers) to every request
         const [documentRes, categoryRes, departmentRes] = await Promise.all([
           axios.get(`http://localhost:8000/api/v1/documents/${id}`, config),
           axios.get("http://localhost:8000/api/v1/categories", config),
@@ -47,7 +40,6 @@ const DocumentEdit = () => {
 
         const documentData = documentRes.data.data || documentRes.data;
         
-        // Simplified permission check (Admin or Uploader)
         const isOwner = documentData.uploaded_by === user.id || documentData.uploader_id === user.id;
         const canUpdateAny = hasPermission("documents-update");
         
@@ -60,9 +52,7 @@ const DocumentEdit = () => {
           title: documentData.title || '',
           description: documentData.description || '',
           category_id: documentData.category_id?.id ||documentData.category_id?._id || documentData.category_id || '', 
-          access_level: documentData.access_level || 'public',
-          department_id: documentData.department_id?.id ||documentData.department_id?._id || documentData.department_id || '',
-          uploaded_by: documentData.uploaded_by,
+          access_level: documentData.access_level || 'public'
         });
 
         setCategories(categoryRes.data.data || []);
@@ -86,7 +76,6 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   setError('');
 
-  // 1. Basic validation
   if (!formData.title.trim()) {
     setError('Title is required');
     return;
@@ -98,10 +87,7 @@ const handleSubmit = async (e) => {
 
   setSaving(true);
   try {
-    // 2. Retrieve the token from storage
     const token = localStorage.getItem("token");
-    
-    // 3. Setup headers for the request
     const config = {
       headers: { 
         Authorization: `Bearer ${token}`,
@@ -109,7 +95,6 @@ const handleSubmit = async (e) => {
       }
     };
 
-    // 4. Use backticks (``) for the URL to inject the ${id}
     await axios.put(
       `http://localhost:8000/api/v1/documents/${id}`, 
       {
@@ -119,10 +104,8 @@ const handleSubmit = async (e) => {
         department_id: formData.department_id,
         access_level: formData.access_level,
       }, 
-      config // 5. Pass the headers here
+      config 
     );
-
-    // 6. Navigate back to details on success
     navigate(`/documents/${id}`, { replace: true });
     
   } catch (err) {
@@ -132,6 +115,12 @@ const handleSubmit = async (e) => {
   } finally {
     setSaving(false);
   }
+};
+  
+  const getCategoryName = (categoryId) => {
+  return categories.find(cat => 
+    cat.id === categoryId || cat.id === Number(categoryId) || cat._id === categoryId
+  )?.title || '—';
 };
 
   const getDepartmentName = (departmentId) => {

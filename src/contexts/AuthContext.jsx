@@ -4,7 +4,6 @@ import axios from "axios";
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
-  // wakilkan context variable untuk create AuthContext
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
@@ -13,12 +12,9 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // create the usual state, user and usersetter (setUser)
-  // initially set as null
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is authenticated and fetch user info
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -30,20 +26,17 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserInfo = async () => {
     const token = localStorage.getItem("token");
-    // negative statement dulu, early return
     if (!token) {
       setUser(null);
       setLoading(false);
       return;
     }
 
-    // Get user from localStorage (stored during login)
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
       setLoading(false);
     } else {
-      // If no user info available, clear auth
       localStorage.removeItem("token");
       setUser(null);
       setLoading(false);
@@ -55,6 +48,35 @@ export const AuthProvider = ({ children }) => {
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
+    }
+  };
+   const register = async (registrationData) => {
+    try {
+      setLoading(true);
+      
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/register", 
+        registrationData
+      );
+
+      const { token, user } = response.data;
+      
+      if (token) {
+        login(token, user);
+        return { success: true, data: response.data };
+      }
+      
+      return { success: true, data: response.data };
+      
+    } catch (error) {
+      console.error("Registration error:", error);
+      
+      return { 
+        success: false, 
+        error: error.response?.data?.message || "Registration failed" 
+      };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,30 +103,21 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasPermission = (permission) => {
-    // kalau user object takde return false
     if (!user) return false;
-    
-    // check dulu user punya permissions
     if (user.permissions && Array.isArray(user.permissions)) {
-      
       return user.permissions.includes(permission);
     }
     
-    // checku user roles
     if (user.roles && Array.isArray(user.roles)) {
       
       const rolePermissions = {
     admin: ['documents-view', 'documents-create', 'documents-update', 'documents-delete', 'documents-download', 'categories-view', 'departments-view'],
-    manager: ['documents-view', 'documents-create', 'documents-update', 'documents-delete', 'documents-download', 'categories-view', 'departments-view'],
+    manager: ['documents-view', 'documents-create', 'documents-update', 'documents-download', 'categories-view', 'departments-view'],
     employee: ['documents-view', 'documents-download', 'categories-view', 'departments-view'],
    };
-      // checking check user ni ada role apa, then check apa yang dia boleh buat
       return user.roles.some(role => {
         const roleName = typeof role === 'string' ? role : role.name;
-        // table lookup
         return rolePermissions[roleName]?.includes(permission);
-
-        // rolePermissions['admin']
       });
     }
     
@@ -127,6 +140,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     login,
+    register,
     logout,
     hasPermission,
     hasRole,

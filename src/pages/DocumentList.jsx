@@ -205,7 +205,9 @@ function DocumentList() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {documents.map(document => (
                   <tr key={document.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{document.title}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {document.title}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {categories.find(cat => cat.id === document.category_id)?.title || '—'}
                     </td>

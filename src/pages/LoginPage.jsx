@@ -4,21 +4,17 @@ import { useAuth } from "../contexts/AuthContext";
 import { Link, useNavigate } from 'react-router-dom';
 
 function LoginPage({ onLoginSuccess }) {
-  // set states untuk email dan password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
   
-  // create the login function
   const handleLogin = async (e) => {
-    // disable html form submission behavior by using e.preventDefault()
     e.preventDefault();
     setError("");
     
     try {
-      // call the login api using axios
       const response = await axios.post("http://localhost:8000/api/v1/login", {
         email: email,
         password: password,
@@ -26,7 +22,6 @@ function LoginPage({ onLoginSuccess }) {
       navigate('/dashboard');
       
       if (response.data.token) {
-        // Store token and user info using AuthContext
         login(response.data.token, response.data.user);
         if (onLoginSuccess) {
           onLoginSuccess();
@@ -36,7 +31,7 @@ function LoginPage({ onLoginSuccess }) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
     }
   };
-  // render the UI 
+
   return (
     <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -47,7 +42,7 @@ function LoginPage({ onLoginSuccess }) {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
         <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          {/* 1. onSubmit event perlu ada logic */}
+          {/* 1. Submit */}
           <form onSubmit={handleLogin} className="space-y-6">
             {error && (
               <div className="mb-4 p-3 bg-red-50 text-red-700 rounded">
@@ -66,10 +61,7 @@ function LoginPage({ onLoginSuccess }) {
                   type="email"
                   name="email"
                   placeholder="Email"
-                  // 2. set email
                   value={email}
-                  // 3. set event: onChange take the value of the input 
-                  // and set it in state
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"

@@ -13,13 +13,19 @@ const Navigation = () => {
   };
 
   const getRoleBadge = (roles) => {
-    switch (roles) {
-      case 'admin': return 'bg-red-500';
-      case 'manager': return 'bg-blue-500';
-      case 'employee': return 'bg-green-500';
-      default: return 'bg-gray-500';
-    }
-  };
+  const role = Array.isArray(roles) ? roles[0] : roles;
+  
+  switch (role?.toLowerCase()) {
+    case 'admin': 
+      return 'bg-red-100 text-red-800 border border-red-200';
+    case 'manager': 
+      return 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+    case 'employee': 
+      return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+    default: 
+      return 'bg-gray-100 text-gray-800 border border-gray-200';
+  }
+};
 
   if (!user) return null;
 
@@ -50,8 +56,8 @@ const Navigation = () => {
                 <span className="px-3 py-1 bg-gray-100 rounded-md text-sm font-medium">
                   {user.name}
                 </span>
-                <span className={`ml-2 px-2 py-0.5 text-xs font-semibold rounded-full ${getRoleBadge(user.roles)} text-white`}>
-                  {user.roles}
+                <span className={`ml-2 px-2.5 py-0.5 text-xs font-semibold rounded-full ${getRoleBadge(user.roles)}`}>
+                   {Array.isArray(user.roles) ? user.roles[0] : user.roles}
                 </span>
               </button>
               {dropdownOpen && (

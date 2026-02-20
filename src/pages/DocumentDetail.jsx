@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const DocumentDetail = () => {
   const { id } = useParams();
-  const { user, hasPermission } = useAuth();
+  const { user, hasPermission, hasRole } = useAuth();
   const navigate = useNavigate();
 
   const [document, setDocument] = useState(null);
@@ -25,7 +25,6 @@ const DocumentDetail = () => {
 
       console.log("Fetching ID:", id);
       
-      // Ensure all requests use the config (Authorization)
       const [documentRes, categoryRes, departmentRes] = await Promise.all([
         axios.get(`http://localhost:8000/api/v1/documents/${id}`, config),
         axios.get("http://localhost:8000/api/v1/categories", config),
@@ -55,7 +54,6 @@ const DocumentDetail = () => {
 useEffect(() => {
   if (user) {
     console.log("User Roles:", user.roles);
-    console.log("Has 'documents-update' permission:", hasPermission("documents-update"));
   }
 }, [user]);
 
@@ -89,22 +87,18 @@ useEffect(() => {
   const handleDownload = async () => {
   try {
     const token = localStorage.getItem("token");
-    
-    // 1. Use backticks `` for the URL
-    // 2. Pass the Authorization header
+ 
     const response = await axios.get(`http://localhost:8000/api/v1/documents/${id}/download`, {
       headers: { 
         Authorization: `Bearer ${token}` 
       },
-      responseType: 'blob', // Important for file handling
+      responseType: 'blob', 
     });
 
-    // Create a URL for the downloaded file
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = window.document.createElement('a'); 
     link.href = url;
 
-    // Use the document title or file_name from state for the saved file name
     link.setAttribute('download', document.file_name || `document-${id}`); 
     
     window.document.body.appendChild(link); 
@@ -116,19 +110,40 @@ useEffect(() => {
     alert('Download failed. Please try again.');
   }
 };
+ 
+  const canEditDocument = () => {
+  if (hasPermission("documents-update") && hasRole("admin")) {
+    return true;
+  }
+  if (hasPermission("documents-update") && hasRole("manager")) {
+    return user?.id && document?.uploader?.id && 
+           String(user.id) === String(document.uploader.id);
+  }
+  
+  return false;
+};
 
   const handleEdit = () => {
     
     navigate(`/documents/${id}/edit`);
   };
 
+  const canDeleteDocument = () => {
+  if (hasPermission("documents-delete")) return true;
+  if (user?.id && document?.uploader?.id) {
+    return String(user.id) === String(document.uploader.id);
+  }
+  
+  return false;
+};
+
   const handleDelete = async () => {
   if (!window.confirm('Are you sure you want to delete this document? This action cannot be undone.')) return;
 
   try {
-    const token = localStorage.getItem("token"); // Get token
+    const token = localStorage.getItem("token"); 
     await axios.delete(`http://localhost:8000/api/v1/documents/${id}`, {
-      headers: { Authorization: `Bearer ${token}` } // Add header
+      headers: { Authorization: `Bearer ${token}` } 
     });
     navigate('/documents', { replace: true });
   } catch (err) {
@@ -164,14 +179,14 @@ useEffect(() => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6">
       {/* Header */}
-       {(hasPermission("documents-download") || hasPermission("documents-update") || hasPermission("documents-delete")) && (
+       {(hasPermission("documents-download") || canEditDocument() || canDeleteDocument()) && (
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 wrap-break-words">{document?.title}</h1>
           <p className="text-gray-600 mt-1">{document?.description || 'No description provided.'}</p>
         </div>
         <div className="flex gap-2">
-          {hasPermission("documents-download") && (
+         {hasPermission("documents-download") && (
           <button
             onClick={handleDownload}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2"
@@ -179,17 +194,17 @@ useEffect(() => {
             📥 Download
           </button>
           )}
-         {hasPermission("documents-update") && (
-  <button onClick={handleEdit} 
-    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-    Edit
-  </button>
-)}
-{hasPermission("documents-delete") && (
-  <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-    Delete
-  </button>
-)}
+         {canEditDocument() && (
+          <button onClick={handleEdit} 
+           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Edit
+          </button>
+          )}
+         {canDeleteDocument() && (
+          <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+            Delete
+          </button>
+          )}
         </div>
       </div>
       )}
